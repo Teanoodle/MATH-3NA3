@@ -1,0 +1,30 @@
+function x = svd_least_squares(A, b, tol)
+    % Solve the least squares problem Ax ≈ b using SVD
+    %
+    % Inputs:
+    %   A   - m x n matrix
+    %   b   - m x 1 right-hand side vector
+    %   tol - tolerance for determining the numerical rank of A
+    %
+    % Output:
+    %   x   - n x 1 least squares solution
+
+    % Compute the SVD of A
+    [U, S, V] = svd(A, 'econ');
+    
+    % Extract the singular values from the diagonal of S
+    sigma = diag(S);
+    
+    % Determine the numerical rank of A
+    r = sum(sigma > tol * max(sigma));
+    
+    % Compute the pseudo-inverse of A
+    S_inv = diag(1 ./ sigma(1:r)); % Invert only nonzero singular values
+    A_pinv = V(:, 1:r) * S_inv * U(:, 1:r)';
+    
+    % Compute the least squares solution
+    x = A_pinv * b;
+    
+    % Display results
+    disp(['Tolerance: ', num2str(tol), ', Rank: ', num2str(r)]);
+end
